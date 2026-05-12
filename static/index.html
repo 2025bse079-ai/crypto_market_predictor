@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Crypto Market Predictor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; }
+
+    /* NAV */
+    nav { background: #1a1d27; border-bottom: 1px solid #2a2d3a; padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 100; }
+    .nav-brand { font-size: 18px; font-weight: 600; color: #f7931a; letter-spacing: -0.5px; }
+    .nav-brand span { color: #ffffff; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: #888; text-decoration: none; font-size: 14px; transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: #f7931a; }
+
+    /* HERO */
+    .hero { text-align: center; padding: 3rem 2rem 2rem; }
+    .hero h1 { font-size: 32px; font-weight: 700; color: #ffffff; margin-bottom: 0.5rem; }
+    .hero h1 span { color: #f7931a; }
+    .hero p { font-size: 15px; color: #888; max-width: 480px; margin: 0 auto; }
+
+    /* METRICS */
+    .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; max-width: 900px; margin: 2rem auto; padding: 0 2rem; }
+    .metric-card { background: #1a1d27; border: 1px solid #2a2d3a; border-radius: 12px; padding: 1.25rem; text-align: center; }
+    .metric-card .label { font-size: 12px; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .metric-card .value { font-size: 24px; font-weight: 700; color: #f7931a; }
+    .metric-card .sub { font-size: 11px; color: #555; margin-top: 4px; }
+
+    /* MAIN CARD */
+    .container { max-width: 700px; margin: 0 auto; padding: 0 2rem 3rem; }
+    .card { background: #1a1d27; border: 1px solid #2a2d3a; border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; }
+    .card h2 { font-size: 16px; font-weight: 600; color: #ffffff; margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 1px solid #2a2d3a; }
+
+    /* FORM */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 0.04em; }
+    .field input { background: #0f1117; border: 1px solid #2a2d3a; border-radius: 8px; padding: 10px 12px; font-size: 14px; color: #e0e0e0; outline: none; transition: border-color 0.2s; }
+    .field input:focus { border-color: #f7931a; }
+    .field input.error-input { border-color: #e24b4a; }
+
+    /* BUTTON */
+    .btn { width: 100%; padding: 12px; background: #f7931a; color: #0f1117; border: none; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 1.5rem; transition: opacity 0.2s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn:hover { opacity: 0.9; }
+    .btn:active { transform: scale(0.99); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* SPINNER */
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(15,17,23,0.3); border-top-color: #0f1117; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RESULT */
+    .result { display: none; margin-top: 1.5rem; background: #0f1117; border: 1px solid #2a2d3a; border-radius: 12px; overflow: hidden; }
+    .result.show { display: block; }
+    .result-header { background: #f7931a; padding: 0.75rem 1.25rem; font-size: 13px; font-weight: 700; color: #0f1117; }
+    .result-body { padding: 1rem 1.25rem; }
+    .result-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #1a1d27; font-size: 14px; }
+    .result-row:last-child { border-bottom: none; }
+    .result-row .key { color: #888; }
+    .result-row .val { font-weight: 600; color: #ffffff; }
+    .up { color: #3B6D11 !important; } .down { color: #e24b4a !important; }
+
+    /* ERROR */
+    .error-msg { display: none; color: #e24b4a; font-size: 13px; margin-top: 0.75rem; padding: 10px 12px; background: rgba(226,75,74,0.1); border-radius: 8px; border: 1px solid rgba(226,75,74,0.2); }
+    .error-msg.show { display: block; }
+
+    /* CHARTS */
+    .chart-wrap { position: relative; width: 100%; height: 280px; margin-top: 1rem; }
+
+    /* FOOTER */
+    footer { text-align: center; padding: 1.5rem; font-size: 12px; color: #444; border-top: 1px solid #1a1d27; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-brand">₿ Crypto<span>Predict</span></div>
+    <div class="nav-links">
+      <a href="#predict" class="active">Predict</a>
+      <a href="#charts">Charts</a>
+      <a href="#about">About</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1>Bitcoin Price <span>Predictor</span></h1>
+    <p>Enter yesterday's market data to get an AI-powered prediction of today's closing price.</p>
+  </div>
+
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="label">Model accuracy</div>
+      <div class="value">99.77%</div>
+      <div class="sub">R² Score</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Algorithm</div>
+      <div class="value" style="font-size:15px; padding-top:4px;">Linear Reg.</div>
+      <div class="sub">Scikit-learn</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Training data</div>
+      <div class="value">1,461</div>
+      <div class="sub">days (2020–2024)</div>
+    </div>
+    <div class="metric-card">
+      <div class="label">Features used</div>
+      <div class="value">7</div>
+      <div class="sub">market indicators</div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="card" id="predict">
+      <h2>Run a prediction</h2>
+      <div class="form-grid">
+        <div class="field">
+          <label>Previous close (USD)</label>
+          <input type="number" id="prev_close" value="65000" />
+        </div>
+        <div class="field">
+          <label>Previous high (USD)</label>
+          <input type="number" id="prev_high" value="67000" />
+        </div>
+        <div class="field">
+          <label>Previous low (USD)</label>
+          <input type="number" id="prev_low" value="63000" />
+        </div>
+        <div class="field">
+          <label>Previous volume</label>
+          <input type="number" id="prev_volume" value="30000000000" />
+        </div>
+        <div class="field">
+          <label>7-day moving avg (USD)</label>
+          <input type="number" id="ma_7" value="64000" />
+        </div>
+        <div class="field">
+          <label>30-day moving avg (USD)</label>
+          <input type="number" id="ma_30" value="62000" />
+        </div>
+      </div>
+      <div class="field" style="margin-top:1rem;">
+        <label>Previous day return (e.g. 0.02 for +2%)</label>
+        <input type="number" id="return_1d" step="0.001" value="0.01" />
+      </div>
+
+      <button class="btn" onclick="predict()" id="predict-btn">
+        <span id="btn-text">Predict closing price</span>
+        <div class="spinner" id="spinner"></div>
+      </button>
+      <div class="error-msg" id="error-msg">Something went wrong. Make sure app.py is running.</div>
+
+      <div class="result" id="result-box">
+        <div class="result-header">Prediction result</div>
+        <div class="result-body">
+          <div class="result-row"><span class="key">Predicted close</span><span class="val" id="res-price">—</span></div>
+          <div class="result-row"><span class="key">Change vs prev close</span><span class="val" id="res-change">—</span></div>
+          <div class="result-row"><span class="key">Confidence range (±2%)</span><span class="val" id="res-range">—</span></div>
+          <div class="result-row"><span class="key">Signal</span><span class="val" id="res-signal">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="charts">
+      <h2>Actual vs Predicted price</h2>
+      <div class="chart-wrap">
+        <canvas id="priceChart" role="img" aria-label="Line chart of actual vs predicted Bitcoin price">Bitcoin price chart</canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Feature importance</h2>
+      <div class="chart-wrap" style="height: 220px;">
+        <canvas id="featChart" role="img" aria-label="Bar chart showing feature weights">Feature importance</canvas>
+      </div>
+    </div>
+
+    <div class="card" id="about">
+      <h2>About this project</h2>
+      <p style="font-size:14px; color:#888; line-height:1.8;">
+        This system uses a <strong style="color:#e0e0e0;">Linear Regression</strong> model trained on Bitcoin historical data from 2020 to 2024, downloaded via Yahoo Finance. It predicts the next day's closing price based on 7 market indicators including moving averages, volume, and daily returns. Built with Python, Scikit-learn, Flask, and Chart.js.
+      </p>
+    </div>
+
+  </div>
+
+  <footer>Built with Python · Scikit-learn · Flask · Chart.js &nbsp;|&nbsp; 2025BSE079</footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    async function predict() {
+      const fields = ['prev_close','prev_high','prev_low','prev_volume','ma_7','ma_30','return_1d'];
+      let valid = true;
+      fields.forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('error-input');
+        if (!el.value || isNaN(el.value)) { el.classList.add('error-input'); valid = false; }
+      });
+      if (!valid) { document.getElementById('error-msg').textContent = 'Please fill in all fields correctly.'; document.getElementById('error-msg').classList.add('show'); return; }
+
+      document.getElementById('error-msg').classList.remove('show');
+      document.getElementById('result-box').classList.remove('show');
+      document.getElementById('predict-btn').disabled = true;
+      document.getElementById('btn-text').textContent = 'Predicting...';
+      document.getElementById('spinner').style.display = 'block';
+
+      const body = {
+        prev_close:  parseFloat(document.getElementById('prev_close').value),
+        prev_high:   parseFloat(document.getElementById('prev_high').value),
+        prev_low:    parseFloat(document.getElementById('prev_low').value),
+        prev_volume: parseFloat(document.getElementById('prev_volume').value),
+        ma_7:        parseFloat(document.getElementById('ma_7').value),
+        ma_30:       parseFloat(document.getElementById('ma_30').value),
+        return_1d:   parseFloat(document.getElementById('return_1d').value),
+      };
+
+      try {
+        const res = await fetch('/predict', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+        const data = await res.json();
+        const pred = data.prediction;
+        const chg  = ((pred - body.prev_close) / body.prev_close * 100).toFixed(2);
+        const low  = (pred * 0.98).toLocaleString('en-US', {maximumFractionDigits:0});
+        const high = (pred * 1.02).toLocaleString('en-US', {maximumFractionDigits:0});
+        const signal = chg > 0.5 ? '🟢 Bullish' : chg < -0.5 ? '🔴 Bearish' : '🟡 Neutral';
+
+        document.getElementById('res-price').textContent  = '$' + pred.toLocaleString();
+        document.getElementById('res-change').textContent = (chg >= 0 ? '+' : '') + chg + '%';
+        document.getElementById('res-change').className   = 'val ' + (chg >= 0 ? 'up' : 'down');
+        document.getElementById('res-range').textContent  = '$' + low + ' – $' + high;
+        document.getElementById('res-signal').textContent = signal;
+        document.getElementById('result-box').classList.add('show');
+      } catch(e) {
+        document.getElementById('error-msg').textContent = 'Something went wrong. Make sure app.py is running.';
+        document.getElementById('error-msg').classList.add('show');
+      } finally {
+        document.getElementById('predict-btn').disabled = false;
+        document.getElementById('btn-text').textContent = 'Predict closing price';
+        document.getElementById('spinner').style.display = 'none';
+      }
+    }
+
+    fetch('/chart-data')
+      .then(res => res.json())
+      .then(data => {
+        const step = 10;
+        const labels    = data.dates.filter((_,i) => i % step === 0);
+        const actual    = data.actual.filter((_,i) => i % step === 0);
+        const predicted = data.predicted.filter((_,i) => i % step === 0);
+        new Chart(document.getElementById('priceChart'), {
+          type: 'line',
+          data: { labels, datasets: [
+            { label: 'Actual',    data: actual,    borderColor: '#f7931a', backgroundColor: 'rgba(247,147,26,0.08)', tension: 0.3, pointRadius: 0, borderWidth: 2, fill: true },
+            { label: 'Predicted', data: predicted, borderColor: '#3B6D11', backgroundColor: 'transparent', tension: 0.3, pointRadius: 0, borderWidth: 1.5, borderDash: [4,3] }
+          ]},
+          options: { responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { color: '#888', boxWidth: 12 } } },
+            scales: {
+              x: { ticks: { color: '#555', maxTicksLimit: 8 }, grid: { color: '#1a1d27' } },
+              y: { ticks: { color: '#555', callback: v => '$' + (v/1000).toFixed(0) + 'k' }, grid: { color: '#1a1d27' } }
+            }
+          }
+        });
+      })
+      .catch(() => {
+        document.getElementById('priceChart').parentElement.innerHTML = '<p style="color:#555; font-size:13px; padding:1rem;">Run <code>python main.py</code> first to generate chart data.</p>';
+      });
+
+    new Chart(document.getElementById('featChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Prev close', 'MA 30', 'MA 7', 'Prev high', 'Prev low', 'Volume', 'Return 1d'],
+        datasets: [{ data: [61,18,10,5,4,1,1], backgroundColor: ['#f7931a','#e8850f','#d9770e','#c9690c','#b95b0a','#a94d08','#993f06'], borderRadius: 4 }]
+      },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#555', callback: v => v + '%' }, grid: { color: '#1a1d27' } },
+          y: { ticks: { color: '#888' }, grid: { display: false } }
+        }
+      }
+    });
+  </script>
+</body>
+</html>
