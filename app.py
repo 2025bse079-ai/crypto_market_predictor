@@ -1,3 +1,6 @@
+import os
+from flask import Flask, jsonify, send_from_directory
+# ... other imports
 import pandas as pd
 from flask import Flask, request, jsonify, send_from_directory
 import joblib
@@ -28,8 +31,6 @@ def index():
 @app.route('/chart-data')
 def chart_data():
     return send_from_directory('static', 'chart_data.json')
-
-import os
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
