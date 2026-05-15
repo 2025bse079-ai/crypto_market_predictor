@@ -7,7 +7,7 @@ function PredictionCard({ getPrediction }) {
 
   const fetchPrediction = async () => {
     setLoading(true);
-    const result = await getPrediction();
+    const result = await getPrediction(); // call your prediction function
     setPrediction(result);
     setLoading(false);
   };
@@ -20,7 +20,7 @@ function PredictionCard({ getPrediction }) {
           <p>Analyzing market trends...</p>
         </div>
       ) : (
-        <p>{prediction}</p>
+        <p>{prediction ? prediction : "No prediction yet"}</p>
       )}
       <button onClick={fetchPrediction}>Predict</button>
     </div>
