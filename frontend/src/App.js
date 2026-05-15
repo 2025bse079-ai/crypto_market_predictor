@@ -5,7 +5,7 @@ function App() {
   const [price, setPrice] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:5000/price")
+    fetch("https://crypto-market-predictor.onrender.com/price")
       .then((response) => response.json())
       .then((data) => setPrice(data.price));
   }, []);
