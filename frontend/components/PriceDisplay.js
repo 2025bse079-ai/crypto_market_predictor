@@ -1,24 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from 'react';
 
-function PriceDisplay() {
-  const [prices, setPrices] = useState({});
-
-  useEffect(() => {
-    fetch(process.env.REACT_APP_BACKEND_URL + "/prices")
-      .then((response) => response.json())
-      .then((data) => setPrices(data));
-  }, []);
-
+function PriceDisplay({ symbol, price, change }) {
   return (
-    <div>
-      <h2>Crypto Prices</h2>
-      <ul>
-        {Object.entries(prices).map(([coin, price]) => (
-          <li key={coin}>
-            {coin.toUpperCase()}: ${price}
-          </li>
-        ))}
-      </ul>
+    <div className="price-display">
+      <h2>{symbol}</h2>
+      <p>${price}</p>
+      <p>{change}%</p>
     </div>
   );
 }
