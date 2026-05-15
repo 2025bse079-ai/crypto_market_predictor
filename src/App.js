@@ -1,19 +1,12 @@
-import PredictionCard from "./components/PredictionCard";
+import PriceDisplay from "./components/PriceDisplay";
 
 function App() {
-  // Example prediction function (replace with your real API call)
-  const fetchPredictionFromAPI = async () => {
-    // Simulate delay for loading animation
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    return "Bitcoin is likely to rise 🚀"; 
-  };
+  const cryptoPrice = 120.45; // replace with your live price state
 
   return (
     <div>
       <h1>Crypto Market Predictor</h1>
-      
-      {/* Prediction Card with loading animation */}
-      <PredictionCard getPrediction={fetchPredictionFromAPI} />
+      <PriceDisplay newPrice={cryptoPrice} />
     </div>
   );
 }
