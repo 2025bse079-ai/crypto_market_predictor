@@ -41,7 +41,7 @@ X_train, X_test = X.iloc[:split], X.iloc[split:]
 y_train, y_test = y.iloc[:split], y.iloc[split:]
 
 print(f"Training on {len(X_train)} days, testing on {len(X_test)} days")
-print(f"Test period: {btc['Date'].iloc[split].date()} → {btc['Date'].iloc[-1].date()}")
+print(f"Test period: {btc['Date'].iloc[split].date()} to {btc['Date'].iloc[-1].date()}")
 
 # ── Train Model ───────────────────────────────────────────────────────
 model = LinearRegression()
